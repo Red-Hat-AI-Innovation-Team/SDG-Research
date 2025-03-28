@@ -200,13 +200,11 @@ def generate_knowledge_qa_dataset(
                 "id": str(uuid.uuid4()),
                 "context": context,
             }
-        else:
-            messages = [
-                {"role": "user", "content": f"{context}\n\n{instruction}"},
-                {"role": "assistant", "content": response},
-            ]
-
-            return {"messages": messages, "metadata": metadata, "id": str(uuid.uuid4())}
+        messages = [
+            {"role": "user", "content": f"{context}\n\n{instruction}"},
+            {"role": "assistant", "content": response},
+        ]
+        return {"messages": messages, "metadata": metadata, "id": str(uuid.uuid4())}
 
     knowledge_ds = generated_dataset.map(
         __create_qa_row, remove_columns=generated_dataset.column_names
@@ -226,14 +224,14 @@ def build_raft_dataset(ds: Dataset, p, num_doc_in_context=4):
                     f"Number of unique document is {len(selected_docs)} which is less than {num_doc_in_context}. Using all the documents in the RAFT context"
                 )
             if random.uniform(0, 1) < p:
-                # golden/answer + distractor documents                                                                                         
+                # golden/answer + distractor documents
                 docs = (
                     random.sample(selected_docs, k=num_doc_in_context-1) + [answer_document]
                     if len(selected_docs) >= (num_doc_in_context-1)
                     else selected_docs + [answer_document]
                 )
             else:
-                # distractor documents                                                                                                         
+                # distractor documents
                 docs = (
                     random.sample(selected_docs, k=num_doc_in_context)
                     if len(selected_docs) >= num_doc_in_context

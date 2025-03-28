@@ -26,7 +26,7 @@ def load_ds(path, sampling_size):
     if path.endswith(".jsonl"):
         LOGGER.info(f"Loading dataset from {path} ...")
         dataset = load_dataset("json", data_files=path, split="train")
-    else: 
+    else:
         LOGGER.info(f"Loading dataset from HF {path} ...")
         dataset = load_dataset(path, split="train")
     LOGGER.info(f"Dataset columns: {dataset.column_names}")

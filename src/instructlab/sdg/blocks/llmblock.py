@@ -1,6 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
 # Standard
-from collections import Counter
 from typing import Any, Dict, List
 import json
 import re
@@ -40,7 +39,7 @@ def server_supports_batched(client, model_id: str) -> bool:
 @BlockRegistry.register("LLMBlock")
 # pylint: disable=dangerous-default-value
 class LLMBlock(Block):
-    # pylint: disable=too-many-instance-attributes
+    # pylint: disable=too-many-instance-attributes,too-many-positional-arguments
     def __init__(
         self,
         block_name,
@@ -57,6 +56,7 @@ class LLMBlock(Block):
         self.prompt_struct = (
             """{system}\n{introduction}\n{principles}\n{examples}\n{generation}"""
         )
+        # pylint: disable=unused-variable
         filtered_config = {
             k: (v if v is not None else "") for k, v in self.block_config.items()
         }
@@ -219,6 +219,7 @@ class LLMBlock(Block):
 
 @BlockRegistry.register("ConditionalLLMBlock")
 class ConditionalLLMBlock(LLMBlock):
+    # pylint: disable=too-many-positional-arguments
     def __init__(
         self,
         block_name,
@@ -246,6 +247,8 @@ class ConditionalLLMBlock(LLMBlock):
         else:
             for config_key, config in config_paths.items():
                 # Template(self.prompt_struct.format(**filtered_config))
+                # TODO: Can this be deleted?
+                # pylint: disable=unused-variable
                 filtered_config = {
                     k: (v if v is not None else "") for k, v in self.block_config.items()
                 }
@@ -263,6 +266,8 @@ class ConditionalLLMBlock(LLMBlock):
 
         return self.prompt_template.render(**sample).strip()
 
+    # TODO: Check argument number change
+    # pylint: disable=arguments-differ
     def _validate(self, prompt_template: str, input_dict: Dict[str, Any]) -> bool:
         if isinstance(prompt_template, dict):
             prompt_template = prompt_template[input_dict[self.selector_column_name]]
@@ -272,6 +277,7 @@ class ConditionalLLMBlock(LLMBlock):
 @BlockRegistry.register("LLMLogProbBlock")
 class LLMLogProbBlock(LLMBlock):
     # init with init of the parent class
+    # pylint: disable=too-many-positional-arguments
     def __init__(
         self,
         block_name,
@@ -319,6 +325,7 @@ class LLMLogProbBlock(LLMBlock):
                 results.append(response.choices[0].logprobs.top_logprobs)
         return results
 
+    # pylint: disable=arguments-renamed
     def _parse(self, generations: List[List[Dict]]) -> List[List[str]]:
         # override the parse method to convert the generations to json string
         # convert the generations to json string to save as dataset
@@ -364,9 +371,10 @@ class LLMLogProbBlock(LLMBlock):
         logger.debug("Generated outputs: %s", outputs)
 
         output_dataset = Dataset.from_list(samples)
+        # pylint: disable=no-value-for-parameter
         output_dataset = output_dataset.add_column(
             self.output_cols[0],
-            self._parse(outputs),  # pylint: disable=no-value-for-parameter
+            self._parse(outputs),
         )
 
         return output_dataset
@@ -374,13 +382,15 @@ class LLMLogProbBlock(LLMBlock):
 
 @BlockRegistry.register("LLMMessagesBlock")
 class LLMMessagesBlock(Block):
+    # TODO: check if super-init-not-called was intensional
+    # pylint: disable=too-many-instance-attributes,too-many-positional-arguments,super-init-not-called
     def __init__(
         self,
         block_name,
         client,
         input_col,
         output_col,
-        model_prompt=None, 
+        model_prompt=None,
         model_id=None,
         **batch_kwargs,
     ) -> None:
@@ -395,7 +405,7 @@ class LLMMessagesBlock(Block):
             self.model = model_id
         else:
             self.model = self.client.models.list().data[0].id
-        
+
         self.defaults = {
             "model": self.model,
             "temperature": 0,

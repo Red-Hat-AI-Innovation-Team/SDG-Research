@@ -30,11 +30,11 @@ class Block(ABC):
         :param input_dict: A dictionary of input values to check against the template.
         :return: True if the input data is valid (i.e., no missing variables), False otherwise.
         """
-        
+
         class Default(dict):
             def __missing__(self, key: str) -> None:
                 raise KeyError(key)
-        
+
         try:
             # Try rendering the template with the input_dict
             prompt_template.render(ChainMap(input_dict, Default()))

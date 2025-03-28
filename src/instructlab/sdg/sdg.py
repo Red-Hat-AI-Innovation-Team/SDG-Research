@@ -78,6 +78,7 @@ class SDG:
             for pipeline in pipelines:
                 input_split = pipeline.generate(input_split)
             return input_split
+        # pylint: disable=broad-exception-caught
         except Exception as e:
             logger.error(f"Error processing split {i}: {e}")
             traceback.print_exc()
@@ -119,7 +120,7 @@ class SDG:
             for pipeline in self.pipelines:
                 generated_dataset = pipeline.generate(seed_data)
             return generated_dataset
-        
+
         logger.info("Splitting the dataset into smaller batches")
         input_splits = (
             self._split_dataset(seed_data, self.batch_size)
