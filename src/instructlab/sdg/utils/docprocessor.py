@@ -35,7 +35,7 @@ def fuse_texts(text_list, short_length_threshold=100):
 
     return fused_texts
 
-
+# pylint: disable=unused-argument
 def handle_footnote(book_element):
     pass
 
@@ -73,9 +73,9 @@ def generate_table_from_parsed_rep(item):
         return ""
 
     table = []
-    for i, row in enumerate(data):
+    for row in data:
         trow = []
-        for j, cell in enumerate(row):
+        for cell in row:
             trow.append(cell["text"])
         table.append(trow)
 
@@ -105,11 +105,10 @@ def get_table_page_number(json_book, idx):
     if prev_page_num is not None and next_page_num is not None:
         if prev_page_num == next_page_num:
             return prev_page_num
-        else:
-            return next_page_num
-    elif prev_page_num is not None:
+        return next_page_num
+    if prev_page_num is not None:
         return prev_page_num
-    elif next_page_num is not None:
+    if next_page_num is not None:
         return next_page_num
 
 
@@ -135,7 +134,7 @@ def build_chunks_from_docling_json(
             "page-header",
         ]:
             continue
-        elif book_element["type"] == "footnote":
+        if book_element["type"] == "footnote":
             handle_footnote(book_element)
             current_book_page_number = book_element["prov"][0]["page"]
         elif book_element["type"] in [
@@ -205,6 +204,7 @@ def build_chunks_from_docling_json(
 
         try:
             prev_page_number = current_book_page_number
+        # pylint: disable=bare-except
         except:
             logger.error(book_element)
     if "\n\n".join(current_buffer) not in document_chunks:
@@ -294,6 +294,7 @@ class DocProcessor:
         for icl_ in icl:
             chunked_document_all_icl.append(
                 chunked_document.map(
+                    # pylint: disable=cell-var-from-loop
                     lambda x: {
                         "icl_document": icl_["context"],
                         "icl_query_1": icl_["questions_and_answers"][0]["question"],

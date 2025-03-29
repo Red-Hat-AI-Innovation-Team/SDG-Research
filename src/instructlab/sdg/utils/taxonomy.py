@@ -18,7 +18,6 @@ import gitdb
 import yaml
 
 # First Party
-from instructlab.sdg import utils
 from instructlab.sdg.utils import chunking
 
 logger = logging.getLogger(__name__)
@@ -358,7 +357,7 @@ def _read_taxonomy_file(file_path: str, yaml_rules: Optional[str] = None):
             else:
                 question = seed_example.get("question")
                 answer = seed_example.get("answer")
-           
+
                 seed_instruction_data.append(
                     {
                         "instruction": question,

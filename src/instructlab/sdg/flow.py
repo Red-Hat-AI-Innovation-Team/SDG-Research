@@ -11,8 +11,6 @@ import yaml
 
 # Local
 from .registry import BlockRegistry, PromptRegistry
-from . import prompts
-from . import blocks
 
 
 OPERATOR_MAP = {
